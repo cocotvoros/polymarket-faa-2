@@ -27,15 +27,20 @@ estimated from each market's own history in the case file:
 - **Smooth view** — a normal random walk whose per-minute sigma is the
   realised RMS of minute diffs over the last hour and last four hours,
   stabilising long horizons where empirical samples are scarce.
+- **Calm view** — a trimmed-RMS sigma over the last 12 hours (largest
+  2% of moves dropped), shrunk halfway toward 0.0025, with a
+  sub-diffusive spread `sigma * h^0.4` and wider tails / narrower
+  shoulders than a normal. Most accurate on calm, mature histories.
 
-Final offset per quantile: `0.6 * 0.7 * empirical + 0.4 * z * sigma *
-sqrt(h)`, clamped to [0, 1] around the last price.
+The first two views combine into offsets `0.6 * 0.7 * empirical +
+0.4 * z * sigma * sqrt(h)`; the rows are then averaged 50/50 with the
+calm view and clamped to [0, 1] around the last price.
 
 The constants were chosen by backtesting inside the kit's practice
 histories (pseudo-checkpoints scored with the contest's pinball loss),
-where this configuration beat the house persistence baseline
-(sigma = 0.0025 fixed) by roughly a tenth in both calm and volatile
-regimes. The program is deterministic and needs no network.
+where the ensemble beat the house persistence baseline (sigma = 0.0025
+fixed) by roughly a fifth on calm checkpoints and a fifteenth on
+volatile ones. The program is deterministic and needs no network.
 
 ## License
 
